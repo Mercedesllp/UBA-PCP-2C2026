@@ -1,38 +1,17 @@
-// Volcan Lanin, parte 2.
-import java.util.concurrent.Semaphore;
-
-public class ExcursionGrupal {
+public class MainExcursionGrupal {
     static int PORTENIOS = 6;
     static int STAGES = 4;
 
-    int cuantosLlegaron = 0;
-    Semaphore mutex = new Semaphore(1);
-    Semaphore lleganTodos = new Semaphore(0);
-    Semaphore lleganTodos2 = new Semaphore(0);
-
+    // Misma barrera generica del Ejercicio 1: sirve para cualquier N de
+    // porteños, no hay que reescribir nada por hardcodear un grupo mas grande.
+    private Barrera barrier = new Barrera(PORTENIOS);
 
     public void esperarPirca() throws InterruptedException {
-        mutex.acquire();
-        cuantosLlegaron ++;
-        if(cuantosLlegaron == PORTENIOS){
-            lleganTodos.release(PORTENIOS);
-        }
-        mutex.release();
-
-        lleganTodos.acquire();
-
-        mutex.acquire();
-        cuantosLlegaron --;
-        if(cuantosLlegaron == 0){
-            lleganTodos2.release(PORTENIOS);
-        }
-        mutex.release();
-
-        lleganTodos2.acquire();
+        barrier.esperar();
     }
 
     public static void main(String[] args) throws InterruptedException {
-        ExcursionGrupal excursion = new ExcursionGrupal();
+        MainExcursionGrupal excursion = new MainExcursionGrupal();
 
         Thread[] group = new Thread[PORTENIOS];
         for (int i = 0; i < PORTENIOS; i++) {

@@ -1,25 +1,22 @@
-// Volcan Lanin, parte 1.
 import java.util.concurrent.Semaphore;
 
 public class ExcursionPareja {
     static int STAGES = 5;
 
-    Semaphore llegoA = new Semaphore(0);
-    Semaphore llegoB = new Semaphore(0);
+    private Semaphore andreaArrived = new Semaphore(0);
+    private Semaphore bernardoArrived = new Semaphore(0);
 
     public void caminarAndrea() throws InterruptedException {
         System.out.println("Andrea llega a la pirca");
-
-        llegoA.release();
-        llegoB.acquire();
-
+        andreaArrived.release();
+        bernardoArrived.acquire();
         System.out.println("Andrea arranca el siguiente tramo");
     }
 
     public void caminarBernardo() throws InterruptedException {
         System.out.println("Bernardo llega a la pirca");
-        llegoB.release();
-        llegoA.acquire();
+        bernardoArrived.release();
+        andreaArrived.acquire();
         System.out.println("Bernardo arranca el siguiente tramo");
     }
 
@@ -30,19 +27,16 @@ public class ExcursionPareja {
             System.out.println("--- tramo " + stage + " ---");
 
             Thread andrea = new Thread(() -> {
-                try {excursion.caminarAndrea();} catch (InterruptedException e) {Thread.currentThread().interrupt();}
+                try { excursion.caminarAndrea(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
             });
-
             Thread bernardo = new Thread(() -> {
-                try {excursion.caminarBernardo();} catch (InterruptedException e) {Thread.currentThread().interrupt();}
+                try { excursion.caminarBernardo(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
             });
 
             andrea.start();
             bernardo.start();
-
             andrea.join();
             bernardo.join();
-
         }
     }
 }
