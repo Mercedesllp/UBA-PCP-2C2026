@@ -46,14 +46,15 @@ public class G2E7 {
       int id = i;
       clients[i] = new Thread(() ->{
         try {
-          System.out.println("Llega un cliente " + id);
-
-          // El cliente usa una maquina random con cant de discos random
-          int m = ThreadLocalRandom.current().nextInt(0, gym.maquinas.length); 
-          int c = ThreadLocalRandom.current().nextInt(0, DISCOSTOTALES + 1); 
-          int d = 0;
-          // Aca podria crear una rutina para cada cliente pero voy a dejarlo en que la rutina de cada cliente se basa en un ejercicio 
-          gym.tomarMaquina(m, c, d);
+          // Hace una cantidad de ejercicios en su rutina menor o igual a la cantidad de maquinas en el gym
+          int cantEjercicios = ThreadLocalRandom.current().nextInt(1, gym.maquinas.length + 1);
+          System.out.println("Llega un cliente " + id + " y va a hacer " + cantEjercicios + " ejercicios");
+          for(int j = 0; j < cantEjercicios; j++){
+            int m = ThreadLocalRandom.current().nextInt(0, gym.maquinas.length); 
+            int c = ThreadLocalRandom.current().nextInt(0, DISCOSTOTALES + 1); 
+            int d = 0; // Duracion del ejercicio, podria ser otra forma
+            gym.tomarMaquina(m, c, d);
+          }
           System.out.println("Se va el cliente " + id);
         } catch (InterruptedException e){
           Thread.currentThread().interrupt();
