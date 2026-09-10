@@ -1,42 +1,49 @@
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.ThreadLocalRandom; 
+import java.util.concurrent.ThreadLocalRandom;
 
 public class G2E7 {
   static int CLIENTES = 3;
   static int DISCOSTOTALES = 10;
   Semaphore mutex = new Semaphore(1);
 
-  // Hay una cola para los que esperan la liberacion de los discos(? Por eso es fair
-  Semaphore discos = new Semaphore(DISCOSTOTALES, true); 
+  Semaphore discosDisponibles = new Semaphore(DISCOSTOTALES, true);
+  boolean estoyEsperando = false;
 
   Semaphore[] maquinas = new Semaphore[]{
-    new Semaphore(1),
-    new Semaphore(2),
-    new Semaphore(2),
-    new Semaphore(1),
+    new Semaphore(1,true),
+    new Semaphore(2,true),
+    new Semaphore(2,true),
+    new Semaphore(1,true),
   };
-  
+
   public void tomarMaquina(int nroMaquina, int cantDiscos, int duracion) throws
   InterruptedException{
     if(cantDiscos > DISCOSTOTALES){
       throw new RuntimeException("Anda a otro gym, aca no hay tantos discos") {};
     }
-    
+
     Semaphore maq = maquinas[nroMaquina];
 
     // Toma la maquina y luego los discos
     maq.acquire();
-    discos.acquire(cantDiscos);
+
+    mutex.acquire();
+    for(int i = 0; i < cantDiscos; i++){
+        discosDisponibles.acquire();
+    }
+    mutex.release();
 
     // Ejercita
     Thread.sleep(duracion);
 
     // Devuelve los discos y libera la maquina
-    discos.release(cantDiscos);
+    for(int i = 0; i < cantDiscos; i++){
+        discosDisponibles.release();
+    }
     maq.release();
   }
 
-  public static void main() throws
+  public static void main(String[] args) throws
   InterruptedException{
     G2E7 gym = new G2E7();
 
@@ -50,8 +57,8 @@ public class G2E7 {
           int cantEjercicios = ThreadLocalRandom.current().nextInt(1, gym.maquinas.length + 1);
           System.out.println("Llega un cliente " + id + " y va a hacer " + cantEjercicios + " ejercicios");
           for(int j = 0; j < cantEjercicios; j++){
-            int m = ThreadLocalRandom.current().nextInt(0, gym.maquinas.length); 
-            int c = ThreadLocalRandom.current().nextInt(0, DISCOSTOTALES + 1); 
+            int m = ThreadLocalRandom.current().nextInt(0, gym.maquinas.length);
+            int c = ThreadLocalRandom.current().nextInt(0, DISCOSTOTALES + 1);
             int d = 0; // Duracion del ejercicio, podria ser otra forma
             gym.tomarMaquina(m, c, d);
           }
