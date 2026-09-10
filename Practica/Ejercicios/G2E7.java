@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class G2E7 {
   static int CLIENTES = 3;
   static int DISCOSTOTALES = 10;
-  Semaphore mutex = new Semaphore(1);
+  Semaphore turnstile = new Semaphore(1, true);
 
   Semaphore discosDisponibles = new Semaphore(DISCOSTOTALES, true);
   boolean estoyEsperando = false;
@@ -27,11 +27,12 @@ public class G2E7 {
     // Toma la maquina y luego los discos
     maq.acquire();
 
-    mutex.acquire();
+    turnstile.acquire();
+    // De esta manera simula lo que sucede en pseudocodigo pq en java .acquire(int) es atomico
     for(int i = 0; i < cantDiscos; i++){
         discosDisponibles.acquire();
     }
-    mutex.release();
+    turnstile.release();
 
     // Ejercita
     Thread.sleep(duracion);
