@@ -1,6 +1,11 @@
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
+// Al final hay que asumir que el consumidor consume infinitamente al igual que el generador
+// para esto hay que usar semaforos para que se complan las condiciones de la bolsa
+// VER EN CUADERNO
+
+
 public class G2E8 {
 
   static int CANTCONSUMIDORES = 10;
@@ -17,28 +22,24 @@ public class G2E8 {
   InterruptedException{
 
     mutex.acquire();
-    int i = 0;
     // Si hay alguna bolsa en la que pueda meter una bolita lo hace y termina
-    while(i < CANTBOLSAS && bolsa <= CANTGENERADORES){
+    while(bolsa <= CANTGENERADORES){
       bolsa ++;
       puntajeG ++;
       break;
     }
-    i = 0;
-    mutex.release();
+     mutex.release();
   }
 
   public void consumir() throws
   InterruptedException{
     mutex.acquire();
-    int i = 0;
     // Si hay alguna bolsa de la que pueda sacar 2 bolitas lo hace y termina (no entiendo si deberia esperar a que haya bolitas, si espera entonces ahi si tiene sentido el deadlock)
-    while(i < CANTBOLSAS && bolsa >= 2){
+    while(bolsa >= 2){
       bolsa -= 2;
       puntajeC ++;
       break;
     }
-    i = 0;
     mutex.release();
   }
 
