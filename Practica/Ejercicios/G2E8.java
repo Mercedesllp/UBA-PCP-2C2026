@@ -3,7 +3,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 // Al final hay que asumir que el consumidor consume infinitamente al igual que el generador
 // para esto hay que usar semaforos para que se complan las condiciones de la bolsa
-// VER EN CUADERNO
+// VER EN MARKDOWN
 
 
 public class G2E8 {
